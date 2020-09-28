@@ -4,3 +4,5 @@ node_modules/
 .tmp/
 .nyc_output/
 scripts/**/*.js
+scripts/**/*.js.map
+coverage/

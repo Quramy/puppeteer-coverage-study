@@ -4,7 +4,7 @@ declare module "puppeteer-to-istanbul" {
     write(entries: CoverageEntry[], {
        includeHostname: boolean,
        storagePath: string,
-    });
+    }): void;
   }
   const pti: PTI;
   export default pti;
