@@ -5,6 +5,7 @@ import pti from 'puppeteer-to-istanbul';
 import libCov from 'istanbul-lib-coverage';
 import v8toIstanbul from 'v8-to-istanbul';
 import { fromMapFileSource } from 'convert-source-map';
+import { SourceMapConsumer } from 'source-map';
 
 const EXECUTABLE_PATH = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 
@@ -28,25 +29,33 @@ function convertIstanbul(results: CoverageEntry[]) {
 
 async function convertIstanbulWithMap(results: CoverageEntry[]) {
   const v8results = results.map(result => ({
+    ...result,
     functionName: '',
     ranges: result.ranges.map(range => ({
       startOffset: range.start,
-      endOffset: range.end,
+      endOffset: range.end, 
       count: 1,
     })),
     isBlockCoverage: true,
   }))
-  // const smConverter = fromMapFileSource(results[0].text, 'projects/transpiled/dist');
-  // console.log(smConverter);
-  const converter = v8toIstanbul('projects/transpiled/dist/script.js', 0, {
-    source: results[0].text,
-    // sourceMap: smConverter!,
-  });
-  await converter.load();
-  converter.applyCoverage([v8results[0]]);
-  const rawData = converter.toIstanbul();
-  const map1 = libCov.createCoverageMap(converter.toIstanbul());
-  await fs.writeFile('./.nyc_output/out.json', JSON.stringify(rawData, null, 2), 'utf-8');
+  const outs = await v8results.reduce(async (queue, result, i) => {
+    const acc = await queue;
+    const smConverter = fromMapFileSource(result.text, 'projects/transpiled/dist')!;
+    // const consumer = await new SourceMapConsumer(smConverter.sourcemap);
+    const converter = v8toIstanbul('projects/transpiled/dist/script' + i + '.js', 0, {
+      source: result.text,
+      sourceMap: smConverter!,
+    });
+    await converter.load();
+    converter.applyCoverage([result]);
+    const rawData = converter.toIstanbul();
+    return [...acc, rawData];
+  }, Promise.resolve([] as libCov.CoverageMapData[]))
+  const cmap = outs.reduce((acc, rawData) => {
+    acc.merge(libCov.createCoverageMap(rawData));
+    return acc;
+  }, libCov.createCoverageMap());
+  await fs.writeFile('./.nyc_output/out.json', JSON.stringify(cmap.toJSON(), null, 2), 'utf-8');
 }
 
 async function main() {
@@ -58,7 +67,7 @@ async function main() {
   const page = await browser.newPage();
   await page.coverage.startJSCoverage();
   await page.goto('http://localhost:8080')
-  await new Promise(res => setTimeout(res, 300));
+  await new Promise(res => setTimeout(res, 1000));
   const results = await page.coverage.stopJSCoverage();
   await page.close();
   await browser.close();
