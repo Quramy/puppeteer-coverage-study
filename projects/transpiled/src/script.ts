@@ -1,11 +1,10 @@
-async function hoge() {
-  console.log('HOGE');
+async function add(a: number, b: number) {
+  return a + b;
 }
 
-function foo() {
-  console.log('FOO');
-  console.log('BAR');
+function sub(a: number, b: number) {
+  return a - b;
 }
 
-hoge();
-setTimeout(() => hoge(), 50);
+console.log(add(1, 2));
+setTimeout(() => console.log(add(2, 3)), 10);

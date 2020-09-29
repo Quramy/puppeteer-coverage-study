@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "tsc && node scripts/get-coverage.js",
+    "patch:puppeteer": "patch -u < puppeteer.patch",
+    "start": "ts-node scripts/get-coverage.ts",
     "report": "nyc report --reporter=html",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -12,20 +13,18 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "convert-source-map": "^1.7.0",
     "istanbul-lib-coverage": "^3.0.0",
+    "mkdirp": "^1.0.4",
     "puppeteer-core": "^5.3.1",
-    "puppeteer-to-istanbul": "^1.4.0",
-    "source-map": "^0.7.3"
+    "v8-to-istanbul": "^5.0.1"
   },
   "devDependencies": {
-    "@types/convert-source-map": "^1.5.1",
     "@types/istanbul-lib-coverage": "^2.0.3",
+    "@types/mkdirp": "^1.0.1",
     "@types/puppeteer-core": "^2.0.0",
-    "@types/source-map": "^0.5.7",
     "nyc": "^15.1.0",
+    "prettier": "^2.1.2",
     "ts-node": "^9.0.0",
-    "typescript": "^4.0.3",
-    "v8-to-istanbul": "^5.0.1"
+    "typescript": "^4.0.3"
   }
 }

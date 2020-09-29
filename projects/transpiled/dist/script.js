@@ -8,15 +8,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-function hoge() {
+function add(a, b) {
     return __awaiter(this, void 0, void 0, function* () {
-        console.log('HOGE');
+        return a + b;
     });
 }
-function foo() {
-    console.log('FOO');
-    console.log('BAR');
+function sub(a, b) {
+    return a - b;
 }
-hoge();
-setTimeout(() => hoge(), 50);
+console.log(add(1, 2));
+setTimeout(() => console.log(add(2, 3)), 10);
 //# sourceMappingURL=script.js.map
