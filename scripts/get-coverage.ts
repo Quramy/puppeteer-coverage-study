@@ -20,10 +20,12 @@ function showCoverage(results: CoverageEntry[]) {
 }
 
 async function convertIstanbulWithMap(
-  results: (CoverageEntry & { rawScriptCoverage?: any })[], scriptBaseDir: string,
+  results: (CoverageEntry & { rawScriptCoverage?: any })[],
+  scriptBaseDir: string,
+  srcBaseDir: string
 ) {
   const v8results = results.map(result => ({
-    ...result,
+    ...result
   }));
   const outs = await v8results.reduce(async (queue, result, i) => {
     const acc = await queue;
@@ -31,7 +33,7 @@ async function convertIstanbulWithMap(
       path.join(scriptBaseDir, "script" + i + ".js"),
       0,
       {
-        source: result.text,
+        source: result.text
       }
     );
     await converter.load();
@@ -40,6 +42,22 @@ async function convertIstanbulWithMap(
     return [...acc, rawData];
   }, Promise.resolve([] as libCov.CoverageMapData[]));
   const cmap = outs.reduce((acc, rawData) => {
+    rawData = Object.values(rawData).reduce(
+      (acc, d) =>
+        d.path.startsWith("/node_modules") || d.path.startsWith("/webpack")
+          ? acc
+          : {
+              ...acc,
+              [d.path]: {
+                ...d,
+                path:
+                  path.isAbsolute(d.path) && !d.path.startsWith(srcBaseDir)
+                    ? path.join(srcBaseDir, d.path)
+                    : d.path
+              }
+            },
+      {}
+    );
     acc.merge(libCov.createCoverageMap(rawData));
     return acc;
   }, libCov.createCoverageMap());
@@ -72,7 +90,11 @@ async function main() {
   await browser.close();
 
   // showCoverage(results);
-  await convertIstanbulWithMap(results, "projects/transpiled/dist");
+  await convertIstanbulWithMap(
+    results,
+    "projects/transpiled/dist",
+    process.cwd()
+  );
 }
 
 main();
