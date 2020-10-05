@@ -1,26 +1,30 @@
 {
+  "private": true,
   "name": "puppeteer-coverage-study",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
   "scripts": {
     "patch:puppeteer": "patch -u < puppeteer.patch",
     "start": "ts-node scripts/get-coverage.ts",
     "report": "nyc report --reporter=html",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Quramy",
+  "license": "MIT",
   "dependencies": {
+    "@types/convert-source-map": "^1.5.1",
+    "@types/istanbul-lib-coverage": "^2.0.3",
+    "@types/istanbul-lib-report": "^3.0.0",
+    "@types/mkdirp": "^1.0.1",
+    "@types/node-fetch": "^2.5.7",
+    "convert-source-map": "^1.7.0",
     "istanbul-lib-coverage": "^3.0.0",
+    "istanbul-lib-report": "^3.0.0",
+    "istanbul-reports": "^3.0.2",
     "mkdirp": "^1.0.4",
+    "node-fetch": "^2.6.1",
     "puppeteer-core": "^5.3.1",
     "v8-to-istanbul": "^5.0.1"
   },
   "devDependencies": {
-    "@types/istanbul-lib-coverage": "^2.0.3",
-    "@types/mkdirp": "^1.0.1",
     "@types/puppeteer-core": "^2.0.0",
     "@types/react": "^16.9.50",
     "@types/react-dom": "^16.9.8",
